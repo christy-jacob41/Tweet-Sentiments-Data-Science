@@ -1,0 +1,156 @@
+install.packages(c("rtweet", "ggplot2", "dplyr", "tidytext", "igraph", "ggraph", "rjson", "zoo"  ), dependencies = TRUE)
+
+
+# load twitter library - the rtweet library is recommended now over twitteR
+library(rtweet)
+# plotting and pipes - tidyverse!
+library(ggplot2)
+library(dplyr)
+# text mining library
+library(tidytext)
+# plotting packages
+library(igraph)
+library(ggraph)
+library(rjson)
+library(jsonlite)
+library(zoo)
+
+text <- c("Because I could not stop for Death -",
+          "He kindly stopped for me -",
+          "The Carriage held but just Ourselves -",
+          "and Immortality")
+
+library(dplyr)
+text_df <- tibble(line = 1:4, text = text)
+
+
+text_df %>%
+  unnest_tokens(word, text)
+
+
+
+corona_tweets <- search_tweets(q = "#coronavirus", n = 10000,
+                               lang = "en",
+                               include_rts = FALSE)
+
+corona_tweets$stripped_text <- gsub("http.*","",  corona_tweets$text)
+corona_tweets$stripped_text <- gsub("https.*","", corona_tweets$stripped_text)
+
+corona_tweets_clean <- corona_tweets %>%
+  dplyr::select(stripped_text) %>%
+  unnest_tokens(word, stripped_text)
+
+# what are the most frequent words
+
+corona_tweets_clean %>%
+  group_by(word) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+
+data("stop_words")
+# view first 6 words
+head(stop_words)
+## # A tibble: 6 x 2
+##   word      lexicon
+##   <chr>     <chr>  
+## 1 a         SMART  
+## 2 a's       SMART  
+## 3 able      SMART  
+## 4 about     SMART  
+## 5 above     SMART  
+## 6 according SMART
+
+nrow(corona_tweets_clean)
+## [1] 247606
+
+# remove stop words from your list of words
+cleaned_tweet_words <- corona_tweets_clean %>%
+  anti_join(stop_words) %>%
+  filter(!word %in% c("rt","t.co"))
+
+cleaned_tweet_words %>%
+  count(word, sort = TRUE) %>%
+  top_n(15) %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(x = word, y = n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip() +
+  labs(y = "Count",
+       x = "Unique words",
+       title = "Count of unique words found in tweets",
+       subtitle = "Stop words removed from the list")
+
+
+# Another way to download tweets
+#
+
+
+library(tidyr)
+
+q <- "corona"
+
+## Stream time in seconds so for one minute set timeout = 60
+## For larger chunks of time, I recommend multiplying 60 by the number
+## of desired minutes. This method scales up to hours as well
+## (x * 60 = x mins, x * 60 * 60 = x hours)
+## Stream for 30 minutes
+streamtime <- 1 * 60
+
+## Filename to save json data (backup)
+filename <- "rtelect.json"
+
+rt <- stream_tweets(q = q, timeout = streamtime, file_name = filename)
+
+
+rt <- parse_stream(filename)
+
+
+## let's label words as positive or negative  
+
+
+
+library(ggplot2)
+
+library(rjson)
+library(jsonlite)
+# plotting and pipes - tidyverse!
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(tidytext)
+# date time
+library(lubridate)
+library(zoo)
+
+options(stringsAsFactors = FALSE)
+
+bing_word_counts <- cleaned_tweet_words %>%
+  inner_join(get_sentiments("bing")) %>%
+  count(word, sentiment, sort = TRUE) %>%
+  ungroup()
+
+bing_word_counts %>%
+  group_by(sentiment) %>%
+  top_n(10) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, n)) %>%
+  ggplot(aes(word, n, fill = sentiment)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(title = "Sentiment during the Corona virus",
+       y = "Contribution to sentiment",
+       x = NULL) +
+  coord_flip()
+
+f <- read_lines("https://www.gutenberg.org/files/1342/1342-0.txt")
+text_df <- tibble(text = f)
+df <- text_df %>%                                          
+  unnest_tokens(word, text) %>%                                                                       
+  anti_join(stop_words) %>%                                                                                       
+  count(word)
+
+
+filter(get_sentiments("bing"), word == "joy")
+
+get_sentiments("nrc")

@@ -1,0 +1,50 @@
+## ---- message=FALSE, warning=FALSE---------------------------------------
+require(registry)
+require(recommenderlab)
+recommenderRegistry$get_entry_names()
+
+## ---- message=FALSE, warning=FALSE---------------------------------------
+require("recommenderlab")
+data("MovieLense")
+### use only users with more than 100 ratings
+MovieLense100 <- MovieLense[rowCounts(MovieLense) >100,]
+MovieLense100
+
+train <- MovieLense100[1:50]
+rec <- Recommender(train, method = "UBCF")
+rec
+
+
+## ---- message=FALSE, warning=FALSE---------------------------------------
+# Create top-N recommendations for new users 
+# (user 101)
+pre <- predict(rec, MovieLense100[101], n = 10)
+pre
+as(pre, "list")
+
+## ---- message=FALSE, error=FALSE-----------------------------------------
+data("Jester5k")
+e <- evaluationScheme(Jester5k[1:1000], method="split", 
+                      train=0.9, given=15, goodRating=5)
+r1 <- Recommender(getData(e, "train"), "UBCF")
+p1 <- predict(r1, getData(e, "known"), type="ratings")
+error <-  calcPredictionAccuracy(p1, getData(e, "unknown"))
+error
+
+## ---- message=FALSE, error=FALSE-----------------------------------------
+require(registry)
+d <- read.csv("~/Downloads/BX-CSV-Dump/BX-Book-Ratings.csv", sep=";")
+r <- as(d, "realRatingMatrix")
+r
+### use only users with more than 100 ratings
+r100 <- r[rowCounts(r) >100,]
+r100
+
+## ---- message=FALSE, error=FALSE-----------------------------------------
+e <- evaluationScheme(r100[1:100], method="split", 
+                      train=0.9, given=5, goodRating=7)
+r1 <- Recommender(getData(e, "train"), "popular")
+p1 <- predict(r1, getData(e, "known"), type="ratings")
+error <-  calcPredictionAccuracy(p1, getData(e, "unknown"))
+error
+

@@ -1,0 +1,81 @@
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+library(rtweet)
+# plotting and pipes - tidyverse!
+library(ggplot2)
+library(dplyr)
+# plotting packages
+library(igraph)
+library(ggraph)
+library(rjson)
+library(jsonlite)
+library(zoo)
+library(dplyr)
+library(sentimentr)
+library(tidyverse) 
+
+getSources()
+
+require(tm)
+
+docs<- c("UTD is great", "Students from great schools get great jobs", "I will get a great job")
+vs <- VectorSource
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ corpus <- VCorpus(source, readerControl)
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ txt <- system.file("texts", "txt", package = "tm")
+ (ovid <- VCorpus(DirSource(txt, encoding = "UTF-8"),
+                 readerControl = list(language = "lat")))
+##
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ reut21578 <- system.file("texts", "crude", package = "tm")
+ reuters <- VCorpus(DirSource(reut21578, mode = "binary"),
+                  readerControl = list(reader = readReut21578XMLasPlain))
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ inspect(reuters[[1]])
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ inspect(ovid[[2]])
+## # or
+ lapply(ovid[1:2], as.character)
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+## reuters <- tm_map(reuters, stripWhitespace)
+## reuters <- tm_map(reuters, content_transformer(tolower))
+## reuters <- tm_map(reuters, removeWords, stopwords("english"))
+## tm_map(reuters, stemDocument)
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ dtm <- DocumentTermMatrix(reuters)
+ inspect(dtm)
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ dtm <- DocumentTermMatrix(reuters)
+ inspect(dtm)
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ findAssocs(dtm, "opec", 0.8)
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ inspect(removeSparseTerms(dtm, 0.4))
+
+
+## ---- eval=FALSE, message=FALSE, error=FALSE----------------------------------------------------------
+ data("crude")
+ dtm <- DocumentTermMatrix(crude,
+                           control = list(weighting = function(x)
+                             weightTfIdf(x, normalize = FALSE),
+                                          stopwords = TRUE))
+ inspect(dtm[1:5, 273:276])

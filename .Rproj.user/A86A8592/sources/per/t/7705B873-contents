@@ -1,0 +1,52 @@
+## ---- message=FALSE------------------------------------------------------
+A = matrix(c(2, 0, 0, 0, 3, 4, 0, 4, 9), nrow = 3, ncol = 3, byrow = T)
+eigen(A)
+
+
+## ---- message=FALSE, eval=FALSE------------------------------------------
+## require(graphics)
+## ## the variances of the variables in the
+## ## USArrests data vary by orders of magnitude, so scaling is appropriate
+## prcomp(~ Murder + Assault + Rape, data = USArrests, scale = TRUE)
+## plot(prcomp(USArrests))
+## summary(prcomp(USArrests, scale = TRUE))
+## biplot(prcomp(USArrests, scale = TRUE))
+
+
+## ---- message=FALSE, echo=FALSE------------------------------------------
+require(graphics)
+## the variances of the variables in the
+## USArrests data vary by orders of magnitude, so scaling is appropriate
+prcomp(~ Murder + Assault + Rape, data = USArrests, scale = TRUE)
+
+
+## ---- message=FALSE, echo=FALSE------------------------------------------
+require(graphics)
+## the variances of the variables in the
+## USArrests data vary by orders of magnitude, so scaling is appropriate
+plot(prcomp(USArrests))
+
+
+## ---- message=FALSE, echo=FALSE------------------------------------------
+require(graphics)
+## the variances of the variables in the
+## USArrests data vary by orders of magnitude, so scaling is appropriate
+summary(prcomp(USArrests, scale = TRUE))
+
+
+## ---- message=FALSE, echo=FALSE------------------------------------------
+require(graphics)
+## the variances of the variables in the
+## USArrests data vary by orders of magnitude, so scaling is appropriate
+biplot(prcomp(USArrests, scale = TRUE))
+
+
+## ---- message=FALSE------------------------------------------------------
+mtcars.pca <- prcomp(mtcars[,c(1:7,10,11)], center = TRUE,scale. = TRUE)
+
+summary(mtcars.pca)
+
+
+## ---- message=FALSE------------------------------------------------------
+biplot(mtcars.pca)
+
